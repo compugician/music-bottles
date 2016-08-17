@@ -387,7 +387,7 @@ class NeoPatterns : public Adafruit_NeoPixel
 
 #define CAP_CONE 85
 #define CAP_SPHERE 129
-#define CAP_STRAIGHT 50
+#define CAP_STRAIGHT 45
 #define TOLERANCE 12
 #define BOTTLE 400
 
@@ -524,19 +524,19 @@ void readScale() {
     if (abs(abs(detectedChange)-CAP_CONE)<TOLERANCE) {
        digitalWrite(S0,(detectedChange>0)?LOW:HIGH);
        Serial.println("cone");
-       uint32_t currColor = lights.Color(127,0,0);
+       uint32_t currColor = lights.Color(248,255,103);
         capChange(detectedChange, currColor);
     }
     if (abs(abs(detectedChange)-CAP_STRAIGHT)<TOLERANCE) {
        digitalWrite(S1,(detectedChange>0)?LOW:HIGH);
        Serial.println("straight");
-       uint32_t currColor = lights.Color(0,127,0);
+       uint32_t currColor = lights.Color(231,103,255);
         capChange(detectedChange, currColor);
     }
     if (abs(abs(detectedChange)-CAP_SPHERE)<TOLERANCE) {
        digitalWrite(S2,(detectedChange>0)?LOW:HIGH);
        Serial.println("sphere");
-       uint32_t currColor = lights.Color(0,0,127);
+       uint32_t currColor = lights.Color(103,255,211);
         capChange(detectedChange, currColor);
     }
     
