@@ -12,14 +12,17 @@ pygame.mixer.init(22050, -16, 4)  # Begins the pygame mixer module
 class Track:
     def __init__(self, path):
         self.chan = pygame.mixer.find_channel()
-        self.chan.play(pygame.mixer.Sound(path), -1)
-        self.target_volume = 0
+        self.path = path
+        self.chan.play(pygame.mixer.Sound(self.path), -1)
+        self.chan.set_volume(0.0)
 
     def tick(self, target_volume):
         current_volume = self.chan.get_volume()
-        delta = 0.1 if current_volume < target_volume else -0.1 if current_volume > target_volume else 0
-        if delta is not 0:
-            self.chan.set_volume(current_volume + delta)
+        if target_volume is 1:
+            new_volume = 1;
+        else:
+            new_volume = 0.975 * current_volume
+        self.chan.set_volume(new_volume if new_volume>0 else 0)
 
     def get_volume(self):
         return self.chan.get_volume()
@@ -27,17 +30,35 @@ class Track:
     def stop(self):
         self.chan.stop()
 
+    def reset(self):
+        self.chan.stop()
+        self.chan.play(pygame.mixer.Sound(self.path), -1)
+        
 
-track1 = Track('music-files/boston1.wav')
-track2 = Track('music-files/boston2.wav')
-track3 = Track('music-files/boston3.wav')
+
+track1 = Track('music-files/jazz1.wav')
+track2 = Track('music-files/jazz2.wav')
+track3 = Track('music-files/jazz3.wav')
+tracks = [track1, track2, track3]
 
 while True:
-    track1.tick(1 if GPIO.input(23) else 0)
-    track2.tick(1 if GPIO.input(24) else 0)
-    track3.tick(1 if GPIO.input(25) else 0)
-    print track1.get_volume(), track2.get_volume(), track3.get_volume()
-    time.sleep(0.1)
+    gpio1 = GPIO.input(23)
+    gpio2 = GPIO.input(24)
+    gpio3 = GPIO.input(25)    
+
+#    if gpio1 is 0 and gpio2 is 0 and gpio3 is 0:
+#        for track in tracks:
+#            track.reset()
+#        print "reset"
+
+    track1.tick(1 if gpio1 else 0)
+    track2.tick(1 if gpio2 else 0)
+    track3.tick(1 if gpio3 else 0)
+
+    print "gpio", '\t', gpio1, '\t', gpio2, '\t', gpio3
+    print "volume", '\t', track1.get_volume(), '\t', track2.get_volume(), '\t', track3.get_volume()
+
+    time.sleep(0.025)
 
 track1.stop()
 track1.stop()
