@@ -8,6 +8,7 @@ GPIO.setup(24, GPIO.IN)
 GPIO.setup(25, GPIO.IN)
 pygame.mixer.init(22050, -16, 4)  # Begins the pygame mixer module
 
+
 class Track:
     def __init__(self, path):
         self.chan = pygame.mixer.find_channel()
@@ -17,13 +18,15 @@ class Track:
     def tick(self, target_volume):
         current_volume = self.chan.get_volume()
         delta = 0.1 if current_volume < target_volume else -0.1 if current_volume > target_volume else 0
-        self.chan.set_volume(current_volume + delta)
+        if delta is not 0:
+            self.chan.set_volume(current_volume + delta)
 
     def get_volume(self):
         return self.chan.get_volume()
 
     def stop(self):
         self.chan.stop()
+
 
 track1 = Track('music-files/boston1.wav')
 track2 = Track('music-files/boston2.wav')
