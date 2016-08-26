@@ -6,7 +6,8 @@ enum ChangeType {
 enum ObjectType {
   cap,
   bottle,
-  both
+  both,
+  none
 };
 
 enum ObjectShape {
@@ -21,3 +22,15 @@ struct Change {
   ObjectType object;
   ObjectShape shape;
 };
+
+struct BottleState {
+  bool bottleOn;
+  bool capOn;
+};
+
+struct Bottles {
+  BottleState cone;
+  BottleState straight;
+  BottleState sphere;
+};
+
