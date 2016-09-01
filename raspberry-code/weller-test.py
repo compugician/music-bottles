@@ -21,7 +21,7 @@ class Track:
         if target_volume is 1:
             new_volume = 1;
         else:
-            new_volume = 0.975 * current_volume
+            new_volume = 0.95 * current_volume
         self.chan.set_volume(new_volume if new_volume>0 else 0)
 
     def get_volume(self):
