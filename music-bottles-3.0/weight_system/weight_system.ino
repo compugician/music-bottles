@@ -225,6 +225,7 @@ void handleWeightChangeAbsolute(int weight) {
   int found = 0;
   Serial.print("Handling Absolute Weight: ");
   Serial.println(weight);
+  int bestDistance = 9999;
   for (int i=0; i<27; i++) {
     int cone = i%3;
     int straight = (i/3)%3;
@@ -257,7 +258,10 @@ void handleWeightChangeAbsolute(int weight) {
       Serial.print(" [");
       Serial.print(distance);
       Serial.print("] <<< MATCH ");
-      setBottleStates(cone,straight,sphere);
+      if (distance<bestDistance) {
+        setBottleStates(cone,straight,sphere);
+        bestDistance = distance;      
+      }
     } 
     Serial.println();
   }
