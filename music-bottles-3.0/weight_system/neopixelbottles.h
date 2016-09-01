@@ -403,15 +403,18 @@ void capChange(ChangeType changeType , uint32_t currColor) {
 
 bool bottle_added = false;
 
-
-// Ring1 Completion Callback
+static bool lightsRunning = false;
+static uint32_t nextLight = 0;
+// Completion Callback
 void lightsComplete()
 {
-  //if a bottle was added - fade to white
-  if (bottle_added || lights.ActivePattern == RAINBOW_CYCLE) {
-    lights.Fade(lights.Color2, lights.Color(127, 127, 127), 100, 30);
-  }
-  else { // else, staty on the faded in color
-    lights.Fade(lights.Color2, lights.Color2, 100, 30);
-  }
+  lightsRunning = false;
+  lights.Fade(lights.Color2, nextLight, 30, 5);
+//  //if a bottle was added - fade to white
+//  if (bottle_added || lights.ActivePattern == RAINBOW_CYCLE) {
+//    lights.Fade(lights.Color2, lights.Color(127, 127, 127), 100, 30);
+//  }
+//  else { // else, staty on the faded in color
+//    lights.Fade(lights.Color2, lights.Color2, 100, 30);
+//  }
 }

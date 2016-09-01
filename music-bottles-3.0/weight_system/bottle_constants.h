@@ -10,19 +10,21 @@
 //a change smaller than WEIGHT_THRESH is ignored. Consecutive samples within WEIGHT_THRESH are considered the same value.
 #define WEIGHT_THRESH 16
 
-//set lower for speed
+//set lower for speed (5, 5, 20 works well, 2016-08-27)
 #define SAMPLE_AVGCOUNT 5 
-
-#define SAMPLE_COUNT_QUICK 5
-#define SAMPLE_COUNT_STABLE 20
+#define SAMPLE_COUNT_QUICK 3
+#define SAMPLE_COUNT_STABLE 12
 
 #define BOTTLE_TOLERANCE 30
 #define CAP_TOLERANCE 30
 #define BOTH_TOLERANCE 30
 
-#define STABLE_THRESH 44
+#define STABLE_THRESH 40
 
 ObjectShape shapes[] = { cone, straight, sphere };
-int bottleWeights[] = { 830, 895, 965 };
-int capWeights[] = { 270, 150, 475 };
+
+int bottleWeights[] = { 739 , 788 , 856 };
+int capWeights[] = { 228 , 147 , 430 };
+
+
 

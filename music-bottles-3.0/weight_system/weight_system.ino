@@ -65,11 +65,6 @@ void setup() {
  
   lights.begin();
 
-  // Kick off a pattern
-  lights.RainbowCycle(5);
-  //Ring2.Color1 = Ring1.Color1;
-  //Stick.Scanner(Ring1.Color(255,0,0), 55);
-
   lastQuickChange.valid=false;
 }
 
@@ -121,14 +116,7 @@ void handleChange(Change change) {
   
   int value = (change.type == added) ? LOW : HIGH;
 
-  //if a bottle was added, do the same logic as the previous code [[this is for Jasmine to change later, if/however desired, only here for backwards compatibility with rest of logic]
-  if (change.object == bottle && change.type == added) {
-    bottle_added = true;
-    Serial.println("bottle added");
-    lights.Fade(lights.Color(127, 127, 127), lights.Color(0, 80, 0), 100, 30);
-  }
-
-  
+  /*
   if (change.object == bottle && change.type == removed) {
     switch (change.shape) {
       case cone:
@@ -146,88 +134,46 @@ void handleChange(Change change) {
       default:
         break;
     }
-  }
+  }*/
 
   if (change.object == cap) {
     switch (change.shape) {
       case cone:
         digitalWrite(CONE_PIN, value);
-        capChange(change.type, lights.Color(248, 255, 103));
         break;
   
       case straight:
         digitalWrite(STRAIGHT_PIN, value);
-        capChange(change.type, lights.Color(231, 103, 255));
         break;
   
       case sphere:
         digitalWrite(SPHERE_PIN, value);
-        capChange(change.type, lights.Color(103, 255, 211));
         break;
   
       default:
         break;
     }
   }
-}
 
-String bottleToString(BottleState bs) {
-  String result = "";
-  result=((bs.bottleOn)?"Bottle: ON ":"Bottle: OFF");
-  result+=" ";
-  result+=((bs.capOn)?"Cap: ON ":"Cap: OFF");
-
-  return result;
-}
-
-String stateToString(Bottles b) {
-  return "Cone:     "+bottleToString(b.cone)+"\n"
-        +"Straight: "+bottleToString(b.straight)+"\n"
-        +"Sphere:   "+bottleToString(b.sphere)+"\n";
-}
-
-String changeToString(Change c) {
-  String result = "Change: ";
-  result += (c.valid) ? "VALID" : "INVALID";
-  result += "\t";
-  result += (c.type == added) ? "ADDED" : "REMOVED";
-  result += "\t";
-  switch (c.object) {
-    case cap:
-      result += "CAP";
-      break;
-    case bottle:
-      result += "BOTTLE";
-      break;
-    case both:
-      result += "BOTH";
-      break;
-    default:
-      result += "UNKNONW";
-      break;
+/*
+   //if a bottle was added, do the same logic as the previous code [[this is for Jasmine to change later, if/however desired, only here for backwards compatibility with rest of logic]
+  if (change.object == bottle && change.type == added) {
+    bottle_added = true;
+    Serial.println("bottle added");
+    lights.Fade(lights.Color(127, 127, 127), lights.Color(0, 80, 0), 100, 30);
   }
 
-  result += "\t";
-
-  switch (c.shape) {
-    case cone:
-      result += "CONE";
-      break;
-    case straight:
-      result += "STRAIGHT";
-      break;
-    case sphere:
-      result += "SPHERE";
-      break;
-    default:
-      result += "UNKNOWN";
-      break;
-  }
-
-  return result;
+   //sphere
+   capChange(change.type, lights.Color(103, 255, 211));
+   //straight
+   capChange(change.type, lights.Color(231, 103, 255));
+   //cone
+   capChange(change.type, lights.Color(248, 255, 103));
+   */
+ 
 }
 
-//todo: this could be a stack of changes, instead of just the last valid one.
+
 void handleQuickWeightChange(int weight) {
   Serial.print("handling QUICK weight change of: ");
   Serial.println(weight);
@@ -262,8 +208,18 @@ void setBottleStates(int cone, int straight, int sphere) {
   
   bottleStates.sphere.bottleOn = (sphere==0 || sphere==1);
   bottleStates.sphere.capOn = (sphere==0);
-  
 }
+
+
+//COLORS ARE (G R B)
+#define C_WHITE lights.Color(127, 127, 127)
+#define C_RED lights.Color(0, 80, 0)
+#define C_GREEN lights.Color(80, 0, 0)
+#define C_BLUE lights.Color(0, 0, 80)
+#define C_TORQUISE lights.Color(255,66,217)
+#define C_ORANGE lights.Color(239,255,125)
+#define C_PINK lights.Color(125,255,209)
+#define C_DARKBLUE lights.Color(95,50,206)
 
 void handleWeightChangeAbsolute(int weight) {
   int found = 0;
@@ -295,9 +251,12 @@ void handleWeightChangeAbsolute(int weight) {
     Serial.print(":");
     Serial.print(weightTarget);
 
-    if (abs(weightTarget - weight)<STABLE_THRESH) {
+    int distance = abs(weightTarget - weight);
+    if (distance<STABLE_THRESH) {
       found++;
-      Serial.print(" <<< MATCH ");
+      Serial.print(" [");
+      Serial.print(distance);
+      Serial.print("] <<< MATCH ");
       setBottleStates(cone,straight,sphere);
     } 
     Serial.println();
@@ -311,7 +270,33 @@ void handleWeightChangeAbsolute(int weight) {
   digitalWrite(CONE_PIN, (!bottleStates.cone.capOn && bottleStates.cone.bottleOn) ? HIGH : LOW);
   digitalWrite(STRAIGHT_PIN, (!bottleStates.straight.capOn && bottleStates.straight.bottleOn) ? HIGH : LOW);
   digitalWrite(SPHERE_PIN, (!bottleStates.sphere.capOn && bottleStates.sphere.bottleOn) ? HIGH : LOW);
+
+  int g = (bottleStates.cone.bottleOn) ? ((!bottleStates.cone.capOn) ? 255 : 127) : 30;
+  int r = (bottleStates.straight.bottleOn) ? ((!bottleStates.straight.capOn) ? 255 : 127) : 30;
+  int b = (bottleStates.sphere.bottleOn) ? ((!bottleStates.sphere.capOn) ? 255 : 127) : 30;
   
+  if (!lightsRunning) {
+    /*
+    if (!bottleStates.cone.bottleOn && !bottleStates.straight.bottleOn && !bottleStates.sphere.bottleOn) {
+      fadeTo(C_WHITE);
+    } else if (bottleStates.cone.bottleOn && bottleStates.straight.bottleOn && bottleStates.sphere.bottleOn) {
+      fadeTo(C_DARKBLUE);     
+    } else if (bottleStates.cone.bottleOn && bottleStates.straight.bottleOn && bottleStates.sphere.bottleOn) {
+    
+    }*/
+    fadeTo(lights.Color(g,r,b));
+  }
+}
+
+void fadeTo(uint32_t c) {
+//    static uint32_t lastColor = lights.Color(127, 127, 127);
+//      lightsRunning = true;
+//      lights.Fade(lastColor, c, 30, 5);
+//      lastColor = c;    
+   nextLight = c;
+   if (!lightsRunning) {
+     lights.Fade(lights.Color2, c, 30, 5);
+   } 
 }
 
 int sampleScale() {
