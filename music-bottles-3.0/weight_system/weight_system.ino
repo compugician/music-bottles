@@ -210,6 +210,9 @@ void setBottleStates(int cone, int straight, int sphere) {
   bottleStates.sphere.capOn = (sphere==0);
 }
 
+bool allBottlesOff() {
+  return (bottleStates.cone.bottleOn == false && bottleStates.straight.bottleOn == false && bottleStates.sphere.bottleOn == false); 
+}
 
 //COLORS ARE (G R B)
 #define C_WHITE lights.Color(127, 127, 127)
@@ -242,18 +245,20 @@ void handleWeightChangeAbsolute(int weight) {
     if (sphere==1) { weightTarget -= capWeights[2]; }
     if (sphere==2) { weightTarget -= (bottleWeights[2] + capWeights[2]); }
 
-    Serial.print(i);
-    Serial.print(":");
-    Serial.print(sphere);
-    Serial.print(":");
-    Serial.print(straight);
-    Serial.print(":");
-    Serial.print(cone);
-    Serial.print(":");
-    Serial.print(weightTarget);
 
     int distance = abs(weightTarget - weight);
     if (distance<STABLE_THRESH) {
+      
+      Serial.print(i);
+      Serial.print(":");
+      Serial.print(sphere);
+      Serial.print(":");
+      Serial.print(straight);
+      Serial.print(":");
+      Serial.print(cone);
+      Serial.print(":");
+      Serial.print(weightTarget);
+ 
       found++;
       Serial.print(" [");
       Serial.print(distance);
@@ -262,8 +267,8 @@ void handleWeightChangeAbsolute(int weight) {
         setBottleStates(cone,straight,sphere);
         bestDistance = distance;      
       }
+      Serial.println();
     } 
-    Serial.println();
   }
   if (found==0) {
     Serial.println("!!!!!!!!! FOUND NO MATCHING SETTINGS !!!!!!!!!!!!");
@@ -278,6 +283,15 @@ void handleWeightChangeAbsolute(int weight) {
   int g = (bottleStates.cone.bottleOn) ? ((!bottleStates.cone.capOn) ? 255 : 127) : 30;
   int r = (bottleStates.straight.bottleOn) ? ((!bottleStates.straight.capOn) ? 255 : 127) : 30;
   int b = (bottleStates.sphere.bottleOn) ? ((!bottleStates.sphere.capOn) ? 255 : 127) : 30;
+
+  static bool active = true;
+  if (allBottlesOff()) {
+    digitalWrite(Active, LOW);
+    active = false;
+  } else if (!active) {
+    digitalWrite(Active, HIGH);
+    active = true;
+  }
   
   if (!lightsRunning) {
     /*

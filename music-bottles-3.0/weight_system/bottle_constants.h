@@ -23,8 +23,11 @@
 
 ObjectShape shapes[] = { cone, straight, sphere };
 
+//CONE:
 int bottleWeights[] = { 739 , 788 , 856 };
 int capWeights[] = { 228 , 147 , 430 };
 
-
+//SQUARE:
+//int bottleWeights[] = { 955 , 788 , 856 };
+//int capWeights[] = { 319 , 216 , 370 };
 

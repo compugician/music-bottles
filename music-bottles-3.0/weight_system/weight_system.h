@@ -46,10 +46,20 @@ String bottleToString(BottleState bs) {
   return result;
 }
 
+String bottleToStringShort(BottleState bs) {
+  String result = "";
+  result=((bs.bottleOn)?" ON  ":" OFF ");
+  result+="   ";
+  result+=((bs.capOn)?" ON  ":" OFF ");
+
+  return result;  
+}
+
 String stateToString(Bottles b) {
-  return "Cone:     "+bottleToString(b.cone)+"\n"
-        +"Straight: "+bottleToString(b.straight)+"\n"
-        +"Sphere:   "+bottleToString(b.sphere)+"\n";
+  return "         Bottle   Cap\nCone:     "
+        +bottleToStringShort(b.cone)+"\n"
+        +"Straight: "+bottleToStringShort(b.straight)+"\n"
+        +"Sphere:   "+bottleToStringShort(b.sphere)+"\n";
 }
 
 String changeToString(Change c) {
