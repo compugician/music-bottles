@@ -1,3 +1,6 @@
+#
+# Music Bottles player code, based on code by Tomer Weller (tomerweller)
+#
 import pygame.mixer  # bring in mixing capabilities
 import time
 import RPi.GPIO as GPIO  # define
